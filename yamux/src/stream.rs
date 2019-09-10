@@ -3,6 +3,7 @@
 use bytes::{Bytes, BytesMut};
 use futures::{
     channel::mpsc::{Receiver, Sender},
+    stream::FusedStream,
     Stream,
 };
 
@@ -283,6 +284,10 @@ impl StreamHandle {
                     return Err(Error::SessionShutdown);
                 }
                 _ => {}
+            }
+
+            if self.frame_receiver.is_terminated() {
+                return Err(Error::SessionShutdown);
             }
 
             match Pin::new(&mut self.frame_receiver).as_mut().poll_next(cx) {
