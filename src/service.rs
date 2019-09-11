@@ -47,7 +47,7 @@ pub(crate) mod event;
 pub(crate) mod future_task;
 
 pub use crate::service::{
-    config::{DialProtocol, ProtocolHandle, ProtocolMeta, TargetProtocol, TargetSession},
+    config::{ProtocolHandle, ProtocolMeta, TargetProtocol, TargetSession},
     control::ServiceControl,
     event::{ProtocolEvent, ServiceError, ServiceEvent},
 };
@@ -298,7 +298,7 @@ where
     pub async fn dial(
         &mut self,
         address: Multiaddr,
-        target: DialProtocol,
+        target: TargetProtocol,
     ) -> Result<&mut Self, io::Error> {
         let dial_future = self
             .multi_transport
@@ -314,7 +314,7 @@ where
                     })
                     .await
                     .map_err::<io::Error, _>(|_| io::ErrorKind::BrokenPipe.into())?;
-                self.dial_protocols.insert(address, target.into());
+                self.dial_protocols.insert(address, target);
                 self.state.increase();
                 Ok(self)
             }

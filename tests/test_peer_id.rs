@@ -6,7 +6,7 @@ use tentacle::{
     error::Error,
     multiaddr::{multihash::Multihash, Multiaddr, Protocol as MultiProtocol},
     secio::SecioKeyPair,
-    service::{DialProtocol, ProtocolHandle, ProtocolMeta, Service, ServiceError, ServiceEvent},
+    service::{ProtocolHandle, ProtocolMeta, Service, ServiceError, ServiceEvent, TargetProtocol},
     traits::{ServiceHandle, ServiceProtocol},
     ProtocolId,
 };
@@ -136,14 +136,14 @@ fn test_peer_id(fail: bool) {
                 )
                 .expect("Invalid peer id"),
             ));
-            control.dial(addr, DialProtocol::All).unwrap();
+            control.dial(addr, TargetProtocol::All).unwrap();
         });
         assert_eq!(error_receiver.recv(), Ok(9));
     } else {
         listen_addr.push(MultiProtocol::P2p(
             Multihash::from_bytes(key.to_peer_id().into_bytes()).expect("Invalid peer id"),
         ));
-        control.dial(listen_addr, DialProtocol::All).unwrap();
+        control.dial(listen_addr, TargetProtocol::All).unwrap();
         assert_eq!(error_receiver.recv(), Ok(0));
     }
 }
